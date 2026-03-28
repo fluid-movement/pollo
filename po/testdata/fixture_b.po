@@ -1,0 +1,25 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. Button label in the save dialog
+#: src/ui/dialogs.c:42
+msgid "Save changes"
+msgstr "Änderungen speichern"
+
+msgid "Cancel"
+msgstr ""
+
+#, fuzzy
+#| msgid "Delete item"
+msgid "Delete selected items"
+msgstr "Element löschen"
+
+#, c-format
+msgid "%d item"
+msgid_plural "%d items"
+msgstr[0] ""
+msgstr[1] ""
