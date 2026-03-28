@@ -85,7 +85,7 @@ pollo/
 
 ### Module and Go version
 
-- Module path: `github.com/yourusername/pollo`
+- Module path: `github.com/fluid-movement/pollo`
 - Go version: `1.26` (current stable release)
 - Single third-party dependency: `github.com/spf13/cobra` for CLI
 - The PO parser is hand-written; no third-party PO library

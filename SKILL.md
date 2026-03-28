@@ -6,7 +6,7 @@ description: >
   or check translation progress. Triggers: "translate this PO file", "fill in
   the missing translations", "review fuzzy strings", "how complete is the
   translation", "translate locales/X.po".
-requires: pollo in $PATH — go install github.com/yourusername/pollo@latest
+requires: pollo in $PATH — go install github.com/fluid-movement/pollo@latest
 ---
 
 # pollo

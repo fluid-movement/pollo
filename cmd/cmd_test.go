@@ -20,7 +20,7 @@ func TestMain(m *testing.M) {
 	bin.Close()
 	polloBin = bin.Name()
 
-	cmd := exec.Command("go", "build", "-o", polloBin, "github.com/yourusername/pollo")
+	cmd := exec.Command("go", "build", "-o", polloBin, "github.com/fluid-movement/pollo")
 	cmd.Stdout = os.Stderr
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {

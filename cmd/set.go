@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/yourusername/pollo/po"
+	"github.com/fluid-movement/pollo/po"
 )
 
 var setCmd = &cobra.Command{

@@ -1,4 +1,4 @@
-module github.com/yourusername/pollo
+module github.com/fluid-movement/pollo
 
 go 1.26
 

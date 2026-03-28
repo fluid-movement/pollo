@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/yourusername/pollo/po"
+	"github.com/fluid-movement/pollo/po"
 )
 
 // helper to open a fixture file
