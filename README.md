@@ -45,7 +45,7 @@ cd pollo
 go build -o pollo .
 ```
 
-Requires Go 1.21+.
+Requires Go 1.26
 
 ## Status
 

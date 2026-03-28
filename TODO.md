@@ -6,7 +6,7 @@ Ordered by dependency. Complete each section before moving to the next.
 
 ## 1. Project Scaffolding
 
-- [ ] Create `go.mod` with module path `github.com/yourusername/pollo`, Go 1.21+ (use actual current stable)
+- [ ] Create `go.mod` with module path `github.com/yourusername/pollo`, Go 1.26
 - [ ] Create `main.go` — entry point only; delegates to `cmd.Execute()`
 - [ ] Create directory structure: `cmd/`, `po/`, `po/testdata/`
 - [ ] Run `go mod tidy` to fetch `github.com/spf13/cobra`
