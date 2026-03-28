@@ -1,0 +1,37 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de-AT\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# This is a translator comment
+#. Extracted from source
+#: src/app.c:10 src/app.c:11
+#, c-format
+msgid "Hello, %s!"
+msgstr "Hallo, %s!"
+
+#, fuzzy
+#| msgid "Old source"
+#| msgid_plural "Old sources"
+msgid "New source"
+msgid_plural "New sources"
+msgstr[0] "Alte Quelle"
+msgstr[1] "Alte Quellen"
+
+msgctxt "navigation button"
+msgid "Back"
+msgstr "Zurück"
+
+msgctxt "navigation button"
+msgid "Forward"
+msgstr ""
+
+#~ msgid "Removed string"
+#~ msgstr "Entfernte Zeichenkette"
+
+msgid "Multi"
+"line"
+msgstr "Mehr"
+"zeilig"
