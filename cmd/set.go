@@ -51,24 +51,6 @@ func runSet(cmd *cobra.Command, args []string) {
 	}
 
 	// Validate translation flags: exactly one required
-	tFlags := 0
-	if setTranslationFlag != "" {
-		tFlags++
-	}
-	if cmd.Flags().Changed("translation") {
-		// Already counted if non-empty, but handle empty string case
-	}
-	if setTranslationFileFlag != "" {
-		tFlags++
-	}
-	if setTranslationsFlag != "" {
-		tFlags++
-	}
-	if setTranslationsFileFlag != "" {
-		tFlags++
-	}
-
-	// Re-check using Changed() for accurate detection of empty-string flags
 	tFlagsChanged := 0
 	if cmd.Flags().Changed("translation") {
 		tFlagsChanged++
@@ -193,13 +175,6 @@ func runSet(cmd *cobra.Command, args []string) {
 			os.Exit(1)
 		}
 
-		// Validate UTF-8
-		for i, f := range forms {
-			if !isValidUTF8(f) {
-				writeError(fmt.Sprintf("plural form %d contains invalid UTF-8", i))
-			}
-		}
-
 		// Validate placeholders
 		warning = po.ValidatePlaceholders(entry, forms)
 
@@ -232,7 +207,7 @@ func runSet(cmd *cobra.Command, args []string) {
 	}
 
 	// Compute remaining from in-memory state
-	_, _, fuzzy, untranslated := countEntries(file)
+	_, _, fuzzy, untranslated := po.CountEntries(file)
 	remaining := fuzzy + untranslated
 
 	resp := map[string]any{
@@ -259,8 +234,4 @@ func removeFuzzy(flags []string) []string {
 		}
 	}
 	return result
-}
-
-func isValidUTF8(s string) bool {
-	return s == string([]rune(s)) // simple check via rune conversion
 }

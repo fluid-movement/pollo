@@ -29,7 +29,7 @@ func runStats(cmd *cobra.Command, args []string) {
 		writeError(fmt.Sprintf("parse error: %s", err))
 	}
 
-	total, translated, fuzzy, untranslated := countEntries(file)
+	total, translated, fuzzy, untranslated := po.CountEntries(file)
 
 	warningsArr := warnings
 	if warningsArr == nil {
@@ -47,24 +47,4 @@ func runStats(cmd *cobra.Command, args []string) {
 		"remaining":      fuzzy + untranslated,
 		"parse_warnings": warningsArr,
 	})
-}
-
-// countEntries counts translation entry states, excluding header and obsolete.
-func countEntries(file *po.File) (total, translated, fuzzy, untranslated int) {
-	for _, node := range file.Nodes {
-		e, ok := node.(*po.Entry)
-		if !ok {
-			continue
-		}
-		switch e.State() {
-		case "translated":
-			translated++
-		case "fuzzy":
-			fuzzy++
-		case "untranslated":
-			untranslated++
-		}
-		total++
-	}
-	return
 }

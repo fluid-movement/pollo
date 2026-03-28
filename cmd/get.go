@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 
@@ -41,11 +40,8 @@ func runGet(cmd *cobra.Command, args []string) {
 
 	// Validate mutual exclusions
 	byID := getIDFlag != "" || getIDFileFlag != ""
-	if byID && (getOrderFlag != "fuzzy-first" || getSkipIDsFileFlag != "" || getIncludeTranslated) {
-		// Only error if explicitly set
-		if cmd.Flags().Changed("order") || cmd.Flags().Changed("skip-ids-file") || cmd.Flags().Changed("include-translated") {
-			writeError("--id/--id-file are mutually exclusive with --order, --skip-ids-file, and --include-translated")
-		}
+	if byID && (cmd.Flags().Changed("order") || cmd.Flags().Changed("skip-ids-file") || cmd.Flags().Changed("include-translated")) {
+		writeError("--id/--id-file are mutually exclusive with --order, --skip-ids-file, and --include-translated")
 	}
 
 	f, err := os.Open(path)
@@ -120,7 +116,7 @@ func runGetByID(path string, file *po.File, warnings []string) {
 		os.Exit(2)
 	}
 
-	_, _, fuzzy, untranslated := countEntries(file)
+	_, _, fuzzy, untranslated := po.CountEntries(file)
 	_ = writeJSON(buildEntryResponse(false, path, file, found, fuzzy+untranslated, fuzzy, untranslated, warnings))
 }
 
@@ -166,7 +162,7 @@ func runGetIterate(path string, file *po.File, warnings []string, skipMap map[st
 	}
 
 	// Compute remaining counts (skip-file respected)
-	remaining, remainingFuzzy, remainingUntranslated := computeRemaining(file, skipMap)
+	remaining, remainingFuzzy, remainingUntranslated := po.ComputeRemaining(file, skipMap)
 
 	if len(candidates) == 0 {
 		_ = writeJSON(map[string]any{
@@ -185,26 +181,6 @@ func runGetIterate(path string, file *po.File, warnings []string, skipMap map[st
 	_ = writeJSON(buildEntryResponse(false, path, file, entry, remaining, remainingFuzzy, remainingUntranslated, warnings))
 }
 
-func computeRemaining(file *po.File, skipMap map[string]struct{}) (remaining, fuzzy, untranslated int) {
-	for _, node := range file.Nodes {
-		e, ok := node.(*po.Entry)
-		if !ok {
-			continue
-		}
-		if _, skip := skipMap[e.Key()]; skip {
-			continue
-		}
-		switch e.State() {
-		case "fuzzy":
-			fuzzy++
-			remaining++
-		case "untranslated":
-			untranslated++
-			remaining++
-		}
-	}
-	return
-}
 
 func buildEntryResponse(done bool, path string, file *po.File, e *po.Entry, remaining, remainingFuzzy, remainingUntranslated int, warnings []string) map[string]any {
 	// Build flags without "fuzzy"
@@ -248,7 +224,7 @@ func buildEntryResponse(done bool, path string, file *po.File, e *po.Entry, rema
 		} else {
 			resp["current_msgstr_plural"] = []string{}
 		}
-		resp["plural_count"] = json.Number(fmt.Sprintf("%d", file.Nplurals))
+		resp["plural_count"] = file.Nplurals
 	} else {
 		resp["current_msgstr"] = e.Msgstr
 		resp["current_msgstr_plural"] = nil

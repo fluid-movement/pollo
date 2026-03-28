@@ -106,6 +106,7 @@ type parser struct {
 	warnings          []string
 	language          string
 	pluralFormsHeader string
+	seenKeys          map[string]bool
 }
 
 func (p *parser) parse() error {
@@ -144,14 +145,14 @@ func (p *parser) addEntry(e *Entry) {
 	}
 	// Check for duplicate keys (non-header entries only)
 	if e.Msgid != "" {
+		if p.seenKeys == nil {
+			p.seenKeys = make(map[string]bool)
+		}
 		key := e.Key()
-		for _, node := range p.nodes {
-			if existing, ok := node.(*Entry); ok {
-				if existing.Key() == key {
-					p.warnings = append(p.warnings, fmt.Sprintf("duplicate key %q", key))
-					break
-				}
-			}
+		if p.seenKeys[key] {
+			p.warnings = append(p.warnings, fmt.Sprintf("duplicate key %q", key))
+		} else {
+			p.seenKeys[key] = true
 		}
 	}
 	p.nodes = append(p.nodes, e)

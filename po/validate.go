@@ -129,17 +129,7 @@ func comparePlaceholders(src, dst []string) string {
 }
 
 func slicesEqual(a, b []string) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	ac := sortedCopy(a)
-	bc := sortedCopy(b)
-	for i := range ac {
-		if ac[i] != bc[i] {
-			return false
-		}
-	}
-	return true
+	return slices.Equal(sortedCopy(a), sortedCopy(b))
 }
 
 func sortedCopy(s []string) []string {
