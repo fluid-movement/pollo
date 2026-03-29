@@ -120,9 +120,7 @@ func (p *parser) parse() error {
 		}
 
 		if strings.HasPrefix(trimmed, "#~") {
-			if err := p.parseObsolete(); err != nil {
-				return err
-			}
+			p.parseObsolete()
 			continue
 		}
 
@@ -170,7 +168,7 @@ func (p *parser) parseHeaderFields(e *Entry) {
 	}
 }
 
-func (p *parser) parseObsolete() error {
+func (p *parser) parseObsolete() {
 	var obsLines []string
 	for p.pos < len(p.lines) {
 		line := p.lines[p.pos]
@@ -185,7 +183,6 @@ func (p *parser) parseObsolete() error {
 	if len(obsLines) > 0 {
 		p.nodes = append(p.nodes, &ObsoleteNode{Lines: obsLines})
 	}
-	return nil
 }
 
 func (p *parser) parseEntry() (*Entry, error) {

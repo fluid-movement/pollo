@@ -33,11 +33,26 @@ All output is JSON on stdout. The file is never left in a corrupt state (atomic 
 
 ## Install
 
+### Download a prebuilt binary
+
+Download the latest release for your platform from the
+[Releases page](https://github.com/fluid-movement/pollo/releases).
+
+Extract and place the `pollo` binary somewhere on your `$PATH`:
+
+```bash
+# macOS arm64
+tar -xzf pollo_darwin_arm64.tar.gz
+mv pollo /usr/local/bin/
+```
+
+### Via go install (requires Go 1.26)
+
 ```bash
 go install github.com/fluid-movement/pollo@latest
 ```
 
-Or build from source:
+### Build from source
 
 ```bash
 git clone https://github.com/fluid-movement/pollo
@@ -45,8 +60,22 @@ cd pollo
 go build -o pollo .
 ```
 
-Requires Go 1.26
+## Using with Claude Code
+
+pollo is designed to be driven by a Claude Code agent. `SKILL.md` is bundled
+in every release archive — it tells Claude exactly how to run the translation
+loop.
+
+To set it up:
+
+```bash
+# After extracting the release archive:
+cp SKILL.md /path/to/your/project/.claude/skills/pollo.md
+```
+
+Then ask Claude to translate a PO file and it will follow the
+get → translate → set loop automatically.
 
 ## Status
 
-Under active development. See [SPEC.md](SPEC.md) for the full technical specification.
+Under active development. See [docs/](docs/README.md) for the full technical specification.

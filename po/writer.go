@@ -137,6 +137,14 @@ func escape(s string) string {
 			b.WriteString(`\t`)
 		case '\r':
 			b.WriteString(`\r`)
+		case '\a':
+			b.WriteString(`\a`)
+		case '\b':
+			b.WriteString(`\b`)
+		case '\f':
+			b.WriteString(`\f`)
+		case '\v':
+			b.WriteString(`\v`)
 		default:
 			b.WriteRune(r)
 		}

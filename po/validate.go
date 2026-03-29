@@ -30,13 +30,19 @@ func ValidatePlaceholders(entry *Entry, translations []string) string {
 		dstPlaceholders = append(dstPlaceholders, extract(t)...)
 	}
 
-	// For plural entries, we check each translation form against the source.
-	// Actually the spec says multiset equality between source and translation.
-	// For plural entries, compare source against each form individually.
+	// For plural entries, compare each form against its corresponding source:
+	// forms[0] against msgid, forms[1..] against msgid_plural.
 	if len(translations) > 1 {
-		for _, t := range translations {
+		for i, t := range translations {
+			var ref string
+			if i == 0 {
+				ref = source
+			} else {
+				ref = entry.MsgidPlural
+			}
+			refPlaceholders := extract(ref)
 			tPlaceholders := extract(t)
-			if w := comparePlaceholders(srcPlaceholders, tPlaceholders); w != "" {
+			if w := comparePlaceholders(refPlaceholders, tPlaceholders); w != "" {
 				return w
 			}
 		}

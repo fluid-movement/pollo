@@ -1,5 +1,7 @@
 package po
 
+import "strings"
+
 // Entry represents a single active PO entry (translation unit).
 type Entry struct {
 	TranslatorComment  string
@@ -46,12 +48,7 @@ func (e *Entry) State() string {
 }
 
 func isBlank(s string) bool {
-	for _, r := range s {
-		if r != ' ' && r != '\t' && r != '\n' && r != '\r' {
-			return false
-		}
-	}
-	return true
+	return strings.TrimSpace(s) == ""
 }
 
 // ObsoleteNode holds a contiguous block of #~ lines verbatim.
