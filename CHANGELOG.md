@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/fluid-movement/pollo/compare/v0.2.0...v0.2.1) (2026-04-15)
+
+
+### Bug Fixes
+
+* trim trailing newline from --id-file and --translation-file content ([#5](https://github.com/fluid-movement/pollo/issues/5)) ([b40e6b9](https://github.com/fluid-movement/pollo/commit/b40e6b94b44effdb4733fb9e9caf8512ab2c82b7))
+
 ## [0.2.0](https://github.com/fluid-movement/pollo/compare/v0.1.0...v0.2.0) (2026-03-29)
 
 
