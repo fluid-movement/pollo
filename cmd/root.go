@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 	"unicode/utf8"
 
 	"github.com/spf13/cobra"
@@ -60,7 +61,7 @@ func readFlagOrFile(val, filePath, flagName string) (string, error) {
 		if !utf8.Valid(data) {
 			return "", fmt.Errorf("--%s-file contains invalid UTF-8", flagName)
 		}
-		return string(data), nil
+		return strings.TrimRight(string(data), "\r\n"), nil
 	}
 	if !utf8.ValidString(val) {
 		return "", fmt.Errorf("--%s contains invalid UTF-8", flagName)
