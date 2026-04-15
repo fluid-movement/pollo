@@ -6,7 +6,7 @@ description: >
   or check translation progress. Triggers: "translate this PO file", "fill in
   the missing translations", "review fuzzy strings", "how complete is the
   translation", "translate locales/X.po".
-requires: pollo binary in $PATH
+requires: pollo in $PATH — go install github.com/fluid-movement/pollo@latest
 ---
 
 # pollo
@@ -16,34 +16,59 @@ All commands write JSON to stdout; ignore stderr.
 
 ## Loop
 
+Each step is a separate tool call. Never combine into a compound assignment like
+`SKIP_FILE=$(mktemp)` or `ENTRY=$(pollo get ...)` — commands starting with a
+variable assignment bypass the permission allow-list and get denied.
+
 ```
-1. pollo stats <file>        → report progress to user
-2. SKIP_FILE=$(mktemp)
+1. pollo stats <file>
+   → report progress to user
+
+2. Run via Bash: mktemp
+   → note the output path (call it SKIP_FILE in your head)
+
 3. loop:
-   a. ENTRY=$(pollo get <file> --skip-ids-file "$SKIP_FILE")
-   b. if done → break  # check: printf '%s' "$ENTRY" | python3 -c "import json,sys; print(json.loads(sys.stdin.read(), strict=False)['done'])"
-   c. translate (see below) → set $TRANSLATION
-   d. pollo set <file> \
-        --id-file <(printf '%s' "$ENTRY" | python3 -c "import json,sys; print(json.loads(sys.stdin.read(), strict=False)['msgid'], end='')") \
-        --translation-file <(printf '%s' "$TRANSLATION")
-      plural: --translations-file <(printf '%s' "$JSON_ARRAY")
+   a. Run via Bash: pollo get <file> --skip-ids-file <SKIP_FILE_PATH> > /tmp/pollo_entry.json
+      → the JSON is now in /tmp/pollo_entry.json
+
+   b. Run via Bash: python3 -c "import json; d=json.loads(open('/tmp/pollo_entry.json').read(), strict=False); print(d['done'])"
+      → if output is "True" → break
+
+   c. Translate (read msgid and other fields from /tmp/pollo_entry.json using Read tool)
+      → decide TRANSLATION string
+
+   d. Run via Bash: python3 -c "import json; d=json.loads(open('/tmp/pollo_entry.json').read(), strict=False); open('/tmp/pollo_msgid.txt','w').write(d['msgid'])"
+      → writes exact msgid bytes (no trailing newline, no character transcription risk)
+
+      Write TRANSLATION to /tmp/pollo_translation.txt using the Write tool
+
+      For singular:
+        Run via Bash: pollo set <file> --id-file /tmp/pollo_msgid.txt --translation-file /tmp/pollo_translation.txt
+
+      For plural (msgid_plural != null):
+        Write the JSON array of plural forms to /tmp/pollo_translations.json using the Write tool
+        Run via Bash: pollo set <file> --id-file /tmp/pollo_msgid.txt --translations-file /tmp/pollo_translations.json
+
       if response.ok == false → report error, stop
       if response.warning present → note it, continue
-   e. if you cannot translate:
-      printf '%s\n' "$ENTRY_KEY" >> "$SKIP_FILE"   # no msgctxt
-      printf '%s\n' "${MSGCTXT}"$'\x04'"${MSGID}" >> "$SKIP_FILE"  # with msgctxt
-4. pollo stats <file>        → report final progress to user
+
+   e. if you cannot translate this entry:
+      Run via Bash: python3 -c "import json; d=json.loads(open('/tmp/pollo_entry.json').read(), strict=False); k=d.get('msgctxt') or ''; mid=d['msgid']; print((k+chr(4)+mid) if k else mid)" >> <SKIP_FILE_PATH>
+
+4. pollo stats <file>
+   → report final progress to user
 ```
 
-**Always use `--id-file` / `--translation-file` with process substitution** —
-direct flags corrupt values containing newlines, quotes, or backslashes.
-**Never store the msgid in a bash variable** — extract it from `$ENTRY` at call
-time using `python3` with `strict=False` (see step d). This handles multiline
-strings and Unicode special characters (curly quotes, etc.) reliably.
+**Use python3 to extract msgid** — never transcribe it manually into the Write
+tool. Manual transcription risks replacing Unicode characters (e.g. curly
+quotes `"`) with ASCII look-alikes (`"`), causing silent lookup failures.
+
+**pollo set / pollo get trim trailing newlines** from `--id-file` and
+`--translation-file` automatically, so the Write tool's trailing newline on
+translation files is harmless.
 
 **Note on JSON parsing:** pollo's JSON output may contain literal newline
-characters inside string values. Always use `json.loads(..., strict=False)`
-when parsing with Python.
+characters inside string values. Always use `strict=False`.
 
 ## Translating an entry
 
