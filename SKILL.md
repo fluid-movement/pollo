@@ -20,10 +20,12 @@ All commands write JSON to stdout; ignore stderr.
 1. pollo stats <file>        → report progress to user
 2. SKIP_FILE=$(mktemp)
 3. loop:
-   a. pollo get <file> --skip-ids-file "$SKIP_FILE"
-   b. if response.done == true → break
-   c. translate (see below)
-   d. pollo set <file> --id-file <(printf '%s' "$MSGID") --translation-file <(printf '%s' "$TRANSLATION")
+   a. ENTRY=$(pollo get <file> --skip-ids-file "$SKIP_FILE")
+   b. if done → break  # check: printf '%s' "$ENTRY" | python3 -c "import json,sys; print(json.loads(sys.stdin.read(), strict=False)['done'])"
+   c. translate (see below) → set $TRANSLATION
+   d. pollo set <file> \
+        --id-file <(printf '%s' "$ENTRY" | python3 -c "import json,sys; print(json.loads(sys.stdin.read(), strict=False)['msgid'], end='')") \
+        --translation-file <(printf '%s' "$TRANSLATION")
       plural: --translations-file <(printf '%s' "$JSON_ARRAY")
       if response.ok == false → report error, stop
       if response.warning present → note it, continue
@@ -35,6 +37,13 @@ All commands write JSON to stdout; ignore stderr.
 
 **Always use `--id-file` / `--translation-file` with process substitution** —
 direct flags corrupt values containing newlines, quotes, or backslashes.
+**Never store the msgid in a bash variable** — extract it from `$ENTRY` at call
+time using `python3` with `strict=False` (see step d). This handles multiline
+strings and Unicode special characters (curly quotes, etc.) reliably.
+
+**Note on JSON parsing:** pollo's JSON output may contain literal newline
+characters inside string values. Always use `json.loads(..., strict=False)`
+when parsing with Python.
 
 ## Translating an entry
 
